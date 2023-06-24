@@ -4,7 +4,8 @@ RM = rm -f
 
 ############################################################
 all : tr1 tr2 mutex chat_clnt chat_serv
-target : tr1 tr2
+thread : tr1 tr2 mutex
+chat : chat_clnt chat_serv
 
 clean : 
 	$(RM) $(OBJS_DIR)*
