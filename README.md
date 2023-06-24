@@ -3,7 +3,7 @@
 
 ## 목적
 Multi-threading 기반 채팅프로그램
-![record](https://github.com/YunaOI08/2023ComputerNetwork/assets/87895999/a19b451d-e056-43c3-8907-80d76f051281)
+![record](https://github.com/YunaOI08/2023ComputerNetwork/assets/87895999/0b8399f0-16ee-4a6f-a796-aff15ea16336)
 
 
 ## 기능
