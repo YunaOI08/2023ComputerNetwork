@@ -18,10 +18,10 @@ cd 2023ComputerNetwork/src
 gcc thread1.c -o ./.o/trl -lpthread
 ./tr1
 # thread2.c
-gcc thread2.c -o ./.o/tr2 -lpthread
+gcc mutex/thread2.c -o ./.o/tr2 -lpthread
 ./tr1
 # mutex
-gcc mutex.c -o ./.o/mutex -lpthead
+gcc mutex/mutex.c -o ./.o/mutex -lpthead
 ./mutex
 ```
 2. Chat
