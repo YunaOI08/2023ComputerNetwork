@@ -11,8 +11,6 @@ Multi-threading 기반 채팅프로그램
 
 
 ## 실행 방법
-`cd 2023ComputerNetwork`
-
 1. Compile
 
 `cd ./src`
