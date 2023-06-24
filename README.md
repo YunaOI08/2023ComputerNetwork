@@ -11,8 +11,10 @@ Multi-threading 기반 채팅프로그램
 
 
 ## 실행 방법
-cd 2023ComputerNetwork/src
+`cd 2023ComputerNetwork`
+
 1. Compile
+
 `cd ./src`
 ```bash
 # complie all
@@ -23,6 +25,7 @@ make thread
 make chat
 ```
 2. Chat
+
 `cd ./src/.o`
 ```bash
 ./tr1
