@@ -12,22 +12,22 @@ Multi-threading 기반 채팅프로그램
 
 ## 실행 방법
 1. Compile
-      ```bash
-      cd ./src
-      # complie all
-      make
-      # complie thread
-      make thread
-      # complie chat_serv, chat_clnt
-      make chat
-      ```
+```bash
+cd ./src
+# complie all
+make
+# complie thread
+make thread
+# complie chat_serv, chat_clnt
+make chat
+```
 2. Chat
-      ```bash
-      cd ./src/.o
-      ./tr1
-      ./chat_serv 7777
-      ./chat_clnt 127.0.0.1 7777 {ID} # ID에 원하는 대화명 입력
-      ```
+```bash
+cd ./src/.o
+./tr1
+./chat_serv 7777
+./chat_clnt 127.0.0.1 7777 {ID} # ID에 원하는 대화명 입력
+```
 
 ## Reference
 [1] [YU_컴퓨터네트워크및실습] Lab7.Multi-threading-based Server and Client
