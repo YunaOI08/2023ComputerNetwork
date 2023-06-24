@@ -27,7 +27,7 @@ int main(int argc, char *argv[])
 		exit(1);
 	 }
 	
-	sprintf(name, "[%s]", argv[3]); // save client name
+	sprintf(name, "@%s", argv[3]); // save client name
 	sock=socket(PF_INET, SOCK_STREAM, 0);
 	
 	memset(&serv_addr, 0, sizeof(serv_addr));
@@ -37,7 +37,8 @@ int main(int argc, char *argv[])
 	  
 	if(connect(sock, (struct sockaddr*)&serv_addr, sizeof(serv_addr))==-1)
 		error_handling("connect() error");
-	
+	write(sock, name, strlen(name));
+
 	pthread_create(&snd_thread, NULL, send_msg, (void*)&sock);
 	pthread_create(&rcv_thread, NULL, recv_msg, (void*)&sock);
 	pthread_join(snd_thread, &thread_return);

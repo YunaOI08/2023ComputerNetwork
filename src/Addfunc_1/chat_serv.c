@@ -54,13 +54,14 @@ int main(int argc, char *argv[])
 
 		pthread_mutex_lock(&mutx);
 		clnt_socks[clnt_cnt].clnt_sock=clnt_sock; // add new client
-		sprintf(clnt_socks[clnt_cnt].clnt_name, "[%s:%d]", inet_ntoa(clnt_adr.sin_addr), ntohs(clnt_adr.sin_port));
+		// sprintf(clnt_socks[clnt_cnt].clnt_name, "[%s:%d]", inet_ntoa(clnt_adr.sin_addr), ntohs(clnt_adr.sin_port));
+		read(clnt_sock, clnt_socks[clnt_cnt].clnt_name, sizeof(clnt_socks[clnt_cnt].clnt_name));
+		printf("Connected client IP: %s, Name: %s\n", inet_ntoa(clnt_adr.sin_addr), clnt_socks[clnt_cnt].clnt_name);
 		clnt_cnt++;
 		pthread_mutex_unlock(&mutx);
 		
 		pthread_create(&t_id, NULL, handle_clnt, (void*)&clnt_sock);
 		pthread_detach(t_id);
-		printf("Connected client IP: %s \n", inet_ntoa(clnt_adr.sin_addr));
 	}
 	close(serv_sock);
 	return 0;
@@ -75,18 +76,18 @@ void * handle_clnt(void * arg)
 	char dest_name[NAME_SIZE];
 	
 	pthread_mutex_lock(&mutx);
-	
-	// find client name
+	//find client name
 	for (i=0;i<clnt_cnt;i++) {
 		if (clnt_sock==clnt_socks[i].clnt_sock) {
 			strcpy(sender_name, clnt_socks[i].clnt_name);
+			printf("sender's name is %s\n", sender_name);
 			break;
 		}
 	}
 	pthread_mutex_unlock(&mutx);
 	
 	while((str_len=read(clnt_sock, msg, sizeof(msg)))!=0) {
-		scanf(msg, "%s", dest_name);
+		sscanf(msg, "%s", dest_name);
 		if (strcmp(dest_name, "all") == 0) {
 			send_msg(msg+strlen(dest_name)+1, str_len-strlen(dest_name)-1, sender_name, NULL);
 		}
@@ -94,7 +95,7 @@ void * handle_clnt(void * arg)
 			send_msg(msg+strlen(dest_name)+1, str_len-strlen(dest_name)-1, sender_name, dest_name);
 		}
 	}
-	
+	printf("1");
 	pthread_mutex_lock(&mutx);
 	
 	// remove disconnected client
@@ -118,7 +119,7 @@ void send_msg(char * msg, int len, char *sender_name, char *dest_name)   // send
 {
 	int i;
 	pthread_mutex_lock(&mutx);
-	printf("%s: %s", sender_name, dest_name);
+	printf("%s send message to %s\n", sender_name, dest_name);
 	if (dest_name==NULL) {
 		for (i=0;i<clnt_cnt;i++) {
 			write(clnt_socks[i].clnt_sock, sender_name, strlen(sender_name));
