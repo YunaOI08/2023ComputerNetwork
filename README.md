@@ -3,6 +3,8 @@
 
 ## 목적
 Multi-threading 기반 채팅프로그램
+![record](https://github.com/YunaOI08/2023ComputerNetwork/assets/87895999/a19b451d-e056-43c3-8907-80d76f051281)
+
 
 ## 기능
 - 1:1 대화 기능 구현 (@대화명을 통해 사용자 지정)
