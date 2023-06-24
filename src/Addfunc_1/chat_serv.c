@@ -131,6 +131,8 @@ void send_msg(char * msg, int len, char *sender_name, char *dest_name)   // send
 			if (strcmp(clnt_socks[i].clnt_name, sender_name)==0) {
 				write(clnt_socks[i].clnt_sock, "there is no client", strlen("there is no client"));
 				break;
+			}
+		}
 	} else {
 		for (i=0;i<clnt_cnt;i++) {
 			if (strcmp(clnt_socks[i].clnt_name, dest_name)==0) {
