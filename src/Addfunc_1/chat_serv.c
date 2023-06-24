@@ -8,18 +8,25 @@
 #include <pthread.h>
 
 #define BUF_SIZE 100
+#define NAME_SIZE 20
 #define MAX_CLNT 256
 
-void * handle_clnt(void * arg); // 클라이언트 연결을 처리하는 함수의 프로토 타입
-void send_msg(char * msg, int len); // 모든 클라이언트에게 메시지를 보내는 함수의 프로토 타입
-void error_handling(char * msg); // 오류 처리를 위한 함수의 프로토 타입
+typedef struct {
+	int clnt_sock; // client socket descriptor
+	char clnt_name[NAME_SIZE]; // Client name
+} ClientInfo;
 
-int clnt_cnt=0; // 연결된 클라이언트 수
-int clnt_socks[MAX_CLNT]; // 클라이언트 소켓 디스크립터를 저장하는 배열
-pthread_mutex_t mutx;  // 스레드 동기화를 위한 뮤텍스
+void * handle_clnt(void * arg);
+void send_msg(char * msg, int len, char *sender_name, char *dest_name);
+void error_handling(char * msg);
+
+int clnt_cnt=0;
+ClientInfo clnt_socks[MAX_CLNT]; // client information 
+pthread_mutex_t mutx;
 
 int main(int argc, char *argv[])
 {
+	printf("hi");
 	int serv_sock, clnt_sock;
 	struct sockaddr_in serv_adr, clnt_adr;
 	int clnt_adr_sz;
@@ -29,72 +36,109 @@ int main(int argc, char *argv[])
 		exit(1);
 	}
   
-	pthread_mutex_init(&mutx, NULL); // mutex 초기화
-	serv_sock=socket(PF_INET, SOCK_STREAM, 0); //  socket 생성
+	pthread_mutex_init(&mutx, NULL);
+	serv_sock=socket(PF_INET, SOCK_STREAM, 0);
 
-	memset(&serv_adr, 0, sizeof(serv_adr)); //  서버 주소 구조체 초기화
-	serv_adr.sin_family=AF_INET;  // IPv4
-	serv_adr.sin_addr.s_addr=htonl(INADDR_ANY); // 모든 IP 주소로부터의 연결을 허용
-	serv_adr.sin_port=htons(atoi(argv[1])); // 포트 번호 설정
+	memset(&serv_adr, 0, sizeof(serv_adr));
+	serv_adr.sin_family=AF_INET; 
+	serv_adr.sin_addr.s_addr=htonl(INADDR_ANY);
+	serv_adr.sin_port=htons(atoi(argv[1]));
 	
-	if(bind(serv_sock, (struct sockaddr*) &serv_adr, sizeof(serv_adr))==-1) // socket을 서버 주소에 바인딩
+	if(bind(serv_sock, (struct sockaddr*) &serv_adr, sizeof(serv_adr))==-1)
 		error_handling("bind() error");
-	if(listen(serv_sock, 5)==-1) // 클라이언트 연결을 위해 대기
+	if(listen(serv_sock, 5)==-1)
 		error_handling("listen() error");
 	
 	while(1)
 	{
 		clnt_adr_sz=sizeof(clnt_adr);
-		clnt_sock=accept(serv_sock, (struct sockaddr*)&clnt_adr,&clnt_adr_sz); // 클라이언트 연결 수락
-		
-		pthread_mutex_lock(&mutx); // 공유 데이터에 접근하기 전에 mutex 잠금
-		clnt_socks[clnt_cnt++]=clnt_sock; // 클라이언트의 socket descriptor를 배열에 추가
-		pthread_mutex_unlock(&mutx); // mutex 잠금 해제
-	
-		pthread_create(&t_id, NULL, handle_clnt, (void*)&clnt_sock); // 클라이언트 연결을 처리하기 위해 새 thread 생성
-		pthread_detach(t_id); // thread 분리 (독립적으로 종료 가능)
-		printf("Connected client IP: %s \n", inet_ntoa(clnt_adr.sin_addr)); // 연결된 클라이언트의 IP 주소 출력
+		printf("hi");
+		clnt_sock=accept(serv_sock, (struct sockaddr*)&clnt_adr,&clnt_adr_sz);
+		printf("hi");
+		pthread_mutex_lock(&mutx);
+		clnt_socks[clnt_cnt].clnt_sock=clnt_sock; // add new client
+		sprintf(clnt_socks[clnt_cnt].clnt_name, NAME_SIZE, "[%s:%d]", inet_ntoa(clnt_adr.sin_addr), ntohs(clnt_adr.sin_port));
+		clnt_cnt++;
+		pthread_mutex_unlock(&mutx);
+		printf("hi");
+		pthread_create(&t_id, NULL, handle_clnt, (void*)&clnt_sock);
+		pthread_detach(t_id);
+		printf("Connected client IP: %s \n", inet_ntoa(clnt_adr.sin_addr));
 	}
-	close(serv_sock); // 서버 소켓 닫기
+	close(serv_sock);
 	return 0;
 }
 	
 void * handle_clnt(void * arg)
 {
-	int clnt_sock=*((int*)arg); // arg로부터 클라이언트 socket descriptor 추출
+	int clnt_sock=*((int*)arg);
 	int str_len=0, i;
 	char msg[BUF_SIZE];
+	char sender_name[NAME_SIZE];
+	char dest_name[NAME_SIZE];
 	
-	while((str_len=read(clnt_sock, msg, sizeof(msg)))!=0) // 클라이언트로부터 메세지 읽기
-		send_msg(msg, str_len); // 모든 연결된 클라이언트에게 메세지 전송
+	pthread_mutex_lock(&mutx);
 	
-	pthread_mutex_lock(&mutx); // 공유 데이터에 접근하기 전에 mutex 잠금
-	for(i=0; i<clnt_cnt; i++)   // 연결이 끊긴 클라이언트 제거
+	// find client name
+	for (i=0;i<clnt_cnt;i++) {
+		if (clnt_sock==clnt_socks[i].clnt_sock) {
+			strcpy(sender_name, clnt_socks[i].clnt_name);
+			break;
+		}
+	}
+	pthread_mutex_unlock(&mutx);
+	
+	while((str_len=read(clnt_sock, msg, sizeof(msg)))!=0) {
+		scanf(msg, "%s", dest_name);
+		if (strcmp(dest_name, "all") == 0) {
+			send_msg(msg+strlen(dest_name)+1, str_len-strlen(dest_name)-1, sender_name, NULL);
+		}
+		else {
+			send_msg(msg+strlen(dest_name)+1, str_len-strlen(dest_name)-1, sender_name, dest_name);
+		}
+	}
+	
+	pthread_mutex_lock(&mutx);
+	
+	// remove disconnected client
+	for(i=0; i<clnt_cnt; i++)
 	{
-		if(clnt_sock==clnt_socks[i])
-		{
-			while(i <clnt_cnt-1)
-			{
+		if(clnt_sock==clnt_socks[i].clnt_sock) {
+			while(i <clnt_cnt-1) {
 				clnt_socks[i]=clnt_socks[i+1];
 				  i++;
-
 			}
-
 			break;
 		}
 	}
 	clnt_cnt--;
 	pthread_mutex_unlock(&mutx);
+	
 	close(clnt_sock);
 	return NULL;
 }
-void send_msg(char * msg, int len)   // 모든 클라이언트에게 메세지 전송
+void send_msg(char * msg, int len, char *sender_name, char *dest_name)   // send to all
 {
 	int i;
-	pthread_mutex_lock(&mutx); // 공유 데이터에 접근하기 전에 mutex 잠금
-	for(i=0; i<clnt_cnt; i++)
-		write(clnt_socks[i], msg, len);
-	pthread_mutex_unlock(&mutx); // mutex 잠금 해제
+	pthread_mutex_lock(&mutx);
+	
+	if (dest_name==NULL) {
+		for (i=0;i<clnt_cnt;i++) {
+			write(clnt_socks[i].clnt_sock, sender_name, strlen(sender_name));
+			write(clnt_socks[i].clnt_sock, ":", 2);
+			write(clnt_socks[i].clnt_sock, msg, len);
+		}
+	} else {
+		for (i=0;i<clnt_cnt;i++) {
+			if (strcmp(clnt_socks[i].clnt_name, dest_name)==0) {
+				write(clnt_socks[i].clnt_sock, sender_name, strlen(sender_name));
+				write(clnt_socks[i].clnt_sock, ":", 2);
+				write(clnt_socks[i].clnt_sock, msg, len);
+				break;
+			}
+		}
+	}
+	pthread_mutex_unlock(&mutx);
 }
 void error_handling(char * msg)
 {

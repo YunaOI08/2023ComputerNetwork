@@ -3,7 +3,7 @@ OBJS_DIR=./.o/
 RM = rm -f
 
 THR_DIR=./thread/
-CHAT_DIR=./origin/
+CHAT_DIR=./Addfunc_1/
 ############################################################
 all : tr1 tr2 mutex chat_clnt chat_serv
 thread : tr1 tr2 mutex
@@ -21,7 +21,7 @@ mutex: $(THR_DIR)mutex.c
 	${CC} $(THR_DIR)mutex.c -o $(OBJS_DIR)mutex -lpthread
 
 chat_clnt : $(CHAT_DIR)chat_clnt.c
-	${CC} ./origin/chat_clnt.c -o $(OBJS_DIR)chat_clnt -lpthread
+	${CC} $(CHAT_DIR)chat_clnt.c -o $(OBJS_DIR)chat_clnt -lpthread
 chat_serv : $(CHAT_DIR)chat_serv.c
 	${CC} $(CHAT_DIR)chat_serv.c -o $(OBJS_DIR)chat_serv -lpthread
 

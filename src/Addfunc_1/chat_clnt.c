@@ -8,7 +8,7 @@
 	
 #define BUF_SIZE 100
 #define NAME_SIZE 20
-	
+
 void * send_msg(void * arg);
 void * recv_msg(void * arg);
 void error_handling(char * msg);
@@ -49,16 +49,25 @@ int main(int argc, char *argv[])
 void * send_msg(void * arg)   // send thread main
 {
 	int sock=*((int*)arg);
+	char dest_name[NAME_SIZE];
 	char name_msg[NAME_SIZE+BUF_SIZE];
 	while(1) 
 	{
+		printf("Destination client name (or 'all' for broadcast) like @Yuna");
+		fgets(dest_name, NAME_SIZE, stdin);
+		dest_name[strlen(dest_name)-1] = '\0'; // remove newline character
+		
+		printf("Message: ");
 		fgets(msg, BUF_SIZE, stdin);
+		msg[strlen(msg)-1]='\0'; // remove newline character
+		
 		if(!strcmp(msg,"q\n")||!strcmp(msg,"Q\n")) 
 		{
 			close(sock);
 			exit(0);
 		}
-		sprintf(name_msg,"%s %s", name, msg);
+		// send destination client's name and msg
+		sprintf(name_msg,"%s %s", dest_name, msg);
 		write(sock, name_msg, strlen(name_msg));
 	}
 	return NULL;
