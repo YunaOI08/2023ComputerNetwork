@@ -27,7 +27,7 @@ int main(int argc, char *argv[])
 		exit(1);
 	 }
 	
-	sprintf(name, "[%s]", argv[3]);
+	sprintf(name, "[%s]", argv[3]); // save client name
 	sock=socket(PF_INET, SOCK_STREAM, 0);
 	
 	memset(&serv_addr, 0, sizeof(serv_addr));
