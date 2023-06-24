@@ -53,7 +53,7 @@ void * send_msg(void * arg)   // send thread main
 	char name_msg[NAME_SIZE+BUF_SIZE];
 	while(1) 
 	{
-		printf("Destination client name (or 'all' for broadcast) like @Yuna");
+		printf("Destination client name: ");
 		fgets(dest_name, NAME_SIZE, stdin);
 		dest_name[strlen(dest_name)-1] = '\0'; // remove newline character
 		

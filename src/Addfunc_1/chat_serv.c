@@ -26,7 +26,6 @@ pthread_mutex_t mutx;
 
 int main(int argc, char *argv[])
 {
-	printf("hi");
 	int serv_sock, clnt_sock;
 	struct sockaddr_in serv_adr, clnt_adr;
 	int clnt_adr_sz;
@@ -35,7 +34,6 @@ int main(int argc, char *argv[])
 		printf("Usage : %s <port>\n", argv[0]);
 		exit(1);
 	}
-  
 	pthread_mutex_init(&mutx, NULL);
 	serv_sock=socket(PF_INET, SOCK_STREAM, 0);
 
@@ -52,15 +50,14 @@ int main(int argc, char *argv[])
 	while(1)
 	{
 		clnt_adr_sz=sizeof(clnt_adr);
-		printf("hi");
 		clnt_sock=accept(serv_sock, (struct sockaddr*)&clnt_adr,&clnt_adr_sz);
-		printf("hi");
+
 		pthread_mutex_lock(&mutx);
 		clnt_socks[clnt_cnt].clnt_sock=clnt_sock; // add new client
-		sprintf(clnt_socks[clnt_cnt].clnt_name, NAME_SIZE, "[%s:%d]", inet_ntoa(clnt_adr.sin_addr), ntohs(clnt_adr.sin_port));
+		sprintf(clnt_socks[clnt_cnt].clnt_name, "[%s:%d]", inet_ntoa(clnt_adr.sin_addr), ntohs(clnt_adr.sin_port));
 		clnt_cnt++;
 		pthread_mutex_unlock(&mutx);
-		printf("hi");
+		
 		pthread_create(&t_id, NULL, handle_clnt, (void*)&clnt_sock);
 		pthread_detach(t_id);
 		printf("Connected client IP: %s \n", inet_ntoa(clnt_adr.sin_addr));
@@ -121,7 +118,7 @@ void send_msg(char * msg, int len, char *sender_name, char *dest_name)   // send
 {
 	int i;
 	pthread_mutex_lock(&mutx);
-	
+	printf("%s: %s", sender_name, dest_name);
 	if (dest_name==NULL) {
 		for (i=0;i<clnt_cnt;i++) {
 			write(clnt_socks[i].clnt_sock, sender_name, strlen(sender_name));
