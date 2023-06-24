@@ -95,7 +95,6 @@ void * handle_clnt(void * arg)
 			send_msg(msg+strlen(dest_name)+1, str_len-strlen(dest_name)-1, sender_name, dest_name);
 		}
 	}
-	printf("1");
 	pthread_mutex_lock(&mutx);
 	
 	// remove disconnected client
@@ -119,19 +118,19 @@ void send_msg(char * msg, int len, char *sender_name, char *dest_name)   // send
 {
 	int i;
 	pthread_mutex_lock(&mutx);
-	printf("%s send message to %s\n", sender_name, dest_name);
+	printf("%s send message to %s\t| %s.\n", sender_name, dest_name, msg);
 	if (dest_name==NULL) {
 		for (i=0;i<clnt_cnt;i++) {
-			write(clnt_socks[i].clnt_sock, sender_name, strlen(sender_name));
+			write(clnt_socks[i].clnt_sock, sender_name, NAME_SIZE);
 			write(clnt_socks[i].clnt_sock, ":", 2);
-			write(clnt_socks[i].clnt_sock, msg, len);
+			write(clnt_socks[i].clnt_sock, msg, BUF_SIZE);
 		}
 	} else {
 		for (i=0;i<clnt_cnt;i++) {
 			if (strcmp(clnt_socks[i].clnt_name, dest_name)==0) {
-				write(clnt_socks[i].clnt_sock, sender_name, strlen(sender_name));
+				write(clnt_socks[i].clnt_sock, sender_name, NAME_SIZE);
 				write(clnt_socks[i].clnt_sock, ":", 2);
-				write(clnt_socks[i].clnt_sock, msg, len);
+				write(clnt_socks[i].clnt_sock, msg, BUF_SIZE);
 				break;
 			}
 		}
