@@ -16,17 +16,11 @@ Multi-threading 기반 채팅프로그램
 1. Compile
 ```bash
 cd ./src
-# complie all
-make
-# complie all c files of thread
-make thread
-# complie chat_serv.c, chat_clnt.c
-make chat CHAT_DIR=./Addfunc_1/
+make chat CHAT_DIR=./Addfunc_1/ # complie chat_serv.c, chat_clnt.c
 ```
 2. Chat
 ```bash
 cd ./src/.o
-./tr1
 ./chat_serv 7777
 ./chat_clnt 127.0.0.1 7777 {ID} # ID에 원하는 대화명 입력
 ```
