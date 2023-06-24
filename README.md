@@ -23,7 +23,7 @@ gcc thread2.c -o trl -lpthread
 gcc mutex.c -o mutex -lpthead
 ./mutex
 ```
-2. chatting
+2. Chat
 ```bash
 ./chat_serv 7777
 # ID에 원하는 대화명 입력
