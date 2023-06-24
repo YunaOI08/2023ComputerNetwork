@@ -16,10 +16,10 @@ Multi-threading 기반 채팅프로그램
 cd ./src
 # complie all
 make
-# complie thread
+# complie all c files of thread
 make thread
-# complie chat_serv, chat_clnt
-make chat
+# complie chat_serv.c, chat_clnt.c
+make chat CHAT_DIR=./Addfunc_1/
 ```
 2. Chat
 ```bash
