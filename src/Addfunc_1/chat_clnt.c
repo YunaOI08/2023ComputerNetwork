@@ -54,21 +54,16 @@ void * send_msg(void * arg)   // send thread main
 	char name_msg[NAME_SIZE+BUF_SIZE];
 	while(1) 
 	{
-		// printf("Destination client name: ");
 		fgets(dest_name, NAME_SIZE, stdin);
 		dest_name[strlen(dest_name)-1] = '\0'; // remove newline character
-		 
-		//printf("Message: ");
-		fgets(msg, BUF_SIZE, stdin);
-		msg[strlen(msg)-1]='\0'; // remove newline character
-		
-		if(!strcmp(msg,"q\n")||!strcmp(msg,"Q\n")) 
+
+		if(!strcmp(msg,"q\n")||!strcmp(msg,"Qn")) 
 		{
 			close(sock);
 			exit(0);
 		}
 		// send destination client's name and msg
-		sprintf(name_msg,"%s %s", dest_name, msg);
+		sprintf(name_msg,"%s", dest_name);
 		write(sock, name_msg, strlen(name_msg));
 	}
 	return NULL;
@@ -82,13 +77,11 @@ void * recv_msg(void * arg)   // read thread main
 	while(1)
 	{
 		str_len=read(sock, name_msg, NAME_SIZE+BUF_SIZE-1);
-		//printf("------%s\n", name_msg);
 		if(str_len==-1) 
 			return (void*)-1;
-		name_msg[str_len]=0;
-		fputs(name_msg, stdout);
-		//printf("======%s\n", name_msg);
-		name_msg[strlen(name_msg)-1] = '\0';
+		name_msg[str_len]='\0';
+		//fputs(name_msg, stdout);
+		printf("%s\n", name_msg);
 	}
 	return NULL;
 }

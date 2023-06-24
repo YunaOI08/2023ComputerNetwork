@@ -80,7 +80,7 @@ void * handle_clnt(void * arg)
 	for (i=0;i<clnt_cnt;i++) {
 		if (clnt_sock==clnt_socks[i].clnt_sock) {
 			strcpy(sender_name, clnt_socks[i].clnt_name);
-			printf("sender's name is %s\n", sender_name);
+			//printf("sender's name is %s\n", sender_name);
 			break;
 		}
 	}
@@ -88,12 +88,18 @@ void * handle_clnt(void * arg)
 	
 	while((str_len=read(clnt_sock, msg, sizeof(msg)))!=0) {
 		sscanf(msg, "%s", dest_name);
+		//sscanf(msg, "%s %s", dest_name, msg);
+		//printf("msg : %s\n", msg);
+		//printf("sender_name :  %s\n", sender_name);		
+		//sprintf(msg, "[%s] %s", sender_nam+'\0', msg);
+		//printf("msg :  %s\n", msg);
 		if (strcmp(dest_name, "all") == 0) {
 			send_msg(msg+strlen(dest_name)+1, str_len-strlen(dest_name)-1, sender_name, NULL);
 		}
 		else {
 			send_msg(msg+strlen(dest_name)+1, str_len-strlen(dest_name)-1, sender_name, dest_name);
 		}
+		memset(msg, 0, sizeof(msg));
 	}
 	pthread_mutex_lock(&mutx);
 	
@@ -118,19 +124,20 @@ void send_msg(char * msg, int len, char *sender_name, char *dest_name)   // send
 {
 	int i;
 	pthread_mutex_lock(&mutx);
-	printf("%s send message to %s\t| %s.\n", sender_name, dest_name, msg);
+	//sprintf(msg,"[%s] %s", sender_name, msg);
+	printf("%s send message to %s\t| %s\n", sender_name, dest_name, msg);
 	if (dest_name==NULL) {
 		for (i=0;i<clnt_cnt;i++) {
-			write(clnt_socks[i].clnt_sock, sender_name, NAME_SIZE);
-			write(clnt_socks[i].clnt_sock, ":", 2);
-			write(clnt_socks[i].clnt_sock, msg, BUF_SIZE);
-		}
+			if (strcmp(clnt_socks[i].clnt_name, sender_name)==0) {
+				write(clnt_socks[i].clnt_sock, "there is no client", strlen("there is no client"));
+				break;
 	} else {
 		for (i=0;i<clnt_cnt;i++) {
 			if (strcmp(clnt_socks[i].clnt_name, dest_name)==0) {
-				write(clnt_socks[i].clnt_sock, sender_name, NAME_SIZE);
-				write(clnt_socks[i].clnt_sock, ":", 2);
-				write(clnt_socks[i].clnt_sock, msg, BUF_SIZE);
+				//write(clnt_socks[i].clnt_sock, sender_name, NAME_SIZE);
+				//write(clnt_socks[i].clnt_sock, ":", 2);
+				//write(clnt_socks[i].clnt_sock, msg, BUF_SIZE);
+				write(clnt_socks[i].clnt_sock, msg, strlen(msg));
 				break;
 			}
 		}
