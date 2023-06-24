@@ -30,8 +30,7 @@ gcc chat_serv.c -o ./.o/chat_serv -lpthread
 ./chat_serv 7777
 
 gcc chat_clnt.c -o ./.o/chat_clnt -lpthread
-# ID에 원하는 대화명 입력
-./chat_clnt 127.0.0.1 7777 {ID}
+./chat_clnt 127.0.0.1 7777 {ID} # ID에 원하는 대화명 입력
 ```
 
 ## Reference
