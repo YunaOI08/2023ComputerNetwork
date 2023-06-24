@@ -11,21 +11,25 @@ Multi-threading 기반 채팅프로그램
 
 
 ## 실행 방법
+cd 2023ComputerNetwork/src
 1. Thread Creation
 ```bash
 # thread2.c
-gcc thread1.c -o trl -lpthread
+gcc thread1.c -o ./.o/trl -lpthread
 ./tr1
 # thread2.c
-gcc thread2.c -o trl -lpthread
+gcc thread2.c -o ./.o/tr2 -lpthread
 ./tr1
 # mutex
-gcc mutex.c -o mutex -lpthead
+gcc mutex.c -o ./.o/mutex -lpthead
 ./mutex
 ```
 2. Chat
 ```bash
+gcc chat_serv.c -o ./.o/chat_serv -lpthread
 ./chat_serv 7777
+
+gcc chat_clnt.c -o ./.o/chat_clnt -lpthread
 # ID에 원하는 대화명 입력
 ./chat_clnt 127.0.0.1 7777 {ID}
 ```
